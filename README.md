@@ -12,7 +12,6 @@ The original code contained a bug in the r-to-Z conversion: A misplaced parenthe
 	
 Note: The original simulations from Schönbrodt & Perugini (2013) unfortunately did not use a seed; hence the originally reported results are not fully reproducible and the script here will produce slightly different results.
 
-See the official correction here: XXX (to be updated)
 
 ## Results (with corridor in *r* metric)
 
