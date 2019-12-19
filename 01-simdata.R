@@ -16,7 +16,7 @@ library(doParallel)
 
 nCore <- 1
 registerDoParallel(cores=nCore)
-print(paste("Registered multicores: ", getDoParWorkers()))
+#print(paste("Registered multicores: ", getDoParWorkers()))
 
 # Load Ruscio's function for inducing a correlation into a bivariate data set with empirical marginal distributions
 source("00-Ruscio_GenData.R")
@@ -28,7 +28,7 @@ source("00-Ruscio_GenData.R")
 popsize <- 1000000	# size of population from which samples are drawn
 n.max <- 1000		# maximum sample size
 n.min <- 20			# minimum sample size
-B <- 10000 		# number of bootstrapped trajectories
+B <- 1000 		# number of bootstrapped trajectories
 rs <- seq(.1, .1, by=.1)	# which correlations should be induced in the population?
 
 
@@ -79,11 +79,14 @@ simCorEvol <- function(DIST, rho, n.min=20, n.max=1000, B=10, replace=TRUE, nCor
   }
 
   # Generate population with specified rho
-  cat("\nImposing correlation on data ...\n")
+  #cat("\nImposing correlation on data ...\n")
 	set.seed(123)
+  tic <- Sys.time()
   pop <- GenData(DIST, rho=rho, N=popsize)
+  toc <- Sys.time()
+  #cat("\ntook me ", toc-tic)
 
-  cat("Running multicore simulations ...\n")
+  #cat("Running multicore simulations ...\n")
 
   # outer loop for the distribution of replications across cores
   res1 <- foreach(batch=1:nCore, .combine=rbind) %dopar% {
@@ -106,7 +109,7 @@ simCorEvol <- function(DIST, rho, n.min=20, n.max=1000, B=10, replace=TRUE, nCor
       counter <- counter + 1
 
       # poor man's status bar ...
-      if (counter %% 1000 == 0) print(paste0("Finished simulation ", counter, "..."))
+      #if (counter %% 1000 == 0) print(paste0("Finished simulation ", counter, "..."))
     }
 
     #res <- data.frame(res)
@@ -114,7 +117,7 @@ simCorEvol <- function(DIST, rho, n.min=20, n.max=1000, B=10, replace=TRUE, nCor
     return(res)
   }
 
-  cat("Simulations done.\n")
+  #cat("Simulations done.\n")
 
   return(res1)
 }
@@ -123,14 +126,14 @@ simCorEvol <- function(DIST, rho, n.min=20, n.max=1000, B=10, replace=TRUE, nCor
 dir.create("simData", showWarnings = FALSE)
 
 for (r in rs) {
-  print('####################################')
-  print(Sys.time())
-  print(paste("Computing rho",r))
-  print('####################################')
-  tic <- Sys.time()
+  #print('####################################')
+  #print(Sys.time())
+  #print(paste("Computing rho",r))
+  #print('####################################')
+  #tic <- Sys.time()
   sim <- simCorEvol(TESTDIST, n.max=n.max, B=B, rho=r, replace=TRUE, nCore=nCore)
-  toc <- Sys.time()
-  print(toc-tic)
+  #toc <- Sys.time()
+  #print(toc-tic)
   save(sim, file=paste0("simData/sim",r*10,".RData"), compress="gzip")
   rm(sim)
   gc(reset=TRUE)

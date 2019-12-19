@@ -69,17 +69,13 @@ for (rho in seq(.1, .1, by=.1)) {
 	sim <- data.frame(sim)
 
 	# compute and save the points of stability
-	tic <- Sys.time()
 	POS.10 <- getPOS(sim, w=.10)
-	toc <- Sys.time()
-	print(toc-tic)
-  print(POS.10)
-  POS.15 <- getPOS(sim, w=.15)
-  POS.20 <- getPOS(sim, w=.20)
+  #POS.15 <- getPOS(sim, w=.15)
+  #POS.20 <- getPOS(sim, w=.20)
 
-	save(POS.10, file=paste0("POS/POS.", rho*10, ".10.RData"))
-	save(POS.15, file=paste0("POS/POS.", rho*10, ".15.RData"))
-	save(POS.20, file=paste0("POS/POS.", rho*10, ".20.RData"))
+	#save(POS.10, file=paste0("POS/POS.", rho*10, ".10.RData"))
+	#save(POS.15, file=paste0("POS/POS.", rho*10, ".15.RData"))
+	#save(POS.20, file=paste0("POS/POS.", rho*10, ".20.RData"))
 }
 
 
@@ -89,19 +85,16 @@ for (rho in seq(.1, .1, by=.1)) {
 Q <- data.frame()
 for (rho in seq(.1, .1, by=.1)) {
 
-	load(file=paste0("POS/POS.", rho*10, ".10.RData"))
-	load(file=paste0("POS/POS.", rho*10, ".15.RData"))
-	load(file=paste0("POS/POS.", rho*10, ".20.RData"))
+	#load(file=paste0("POS/POS.", rho*10, ".10.RData"))
+	#load(file=paste0("POS/POS.", rho*10, ".15.RData"))
+	#load(file=paste0("POS/POS.", rho*10, ".20.RData"))
 
 	# save the quantiles of the POS distributions
-  tic <- Sys.time()
 	Q <- rbind(Q,
 		data.frame(rho=rho, w=.10, getQuantiles(POS.10))#,
 		#data.frame(rho=rho, w=.15, getQuantiles(POS.15)),
 		#data.frame(rho=rho, w=.20, getQuantiles(POS.20))
 	)
-  toc <- Sys.time()
-  print(toc-tic)
 }
 
 # reshape to the table format of the publication

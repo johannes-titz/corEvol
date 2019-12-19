@@ -184,8 +184,8 @@ GenData <- function(Pop, rho, N=min(sapply(Pop, length)), N.Factors = 0, Max.Tri
 # Report the results and return the simulated data set (step 14) -----------------------------------------------
 
    Iteration <- Iteration - Max.Trials
-   cat("\nN =",N,", k =",k,",",Iteration,"Iterations,",N.Factors,"Factors, RMSR r =",round(Best.RMSR,3),"\n")
-   cat("Target correlation rho =", rho, "; obtained correlation =", round(cor(Data)[1, 2], 5))
+   #cat("\nN =",N,", k =",k,",",Iteration,"Iterations,",N.Factors,"Factors, RMSR r =",round(Best.RMSR,3),"\n")
+   #cat("Target correlation rho =", rho, "; obtained correlation =", round(cor(Data)[1, 2], 5))
    return(Data)
 }
 
