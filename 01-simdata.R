@@ -14,7 +14,7 @@
 library(dplyr)
 library(doParallel)
 
-nCore <- 10
+nCore <- 1
 registerDoParallel(cores=nCore)
 print(paste("Registered multicores: ", getDoParWorkers()))
 
@@ -28,8 +28,8 @@ source("00-Ruscio_GenData.R")
 popsize <- 1000000	# size of population from which samples are drawn
 n.max <- 1000		# maximum sample size
 n.min <- 20			# minimum sample size
-B <- 100000 		# number of bootstrapped trajectories
-rs <- seq(.1, .7, by=.1)	# which correlations should be induced in the population?
+B <- 10000 		# number of bootstrapped trajectories
+rs <- seq(.1, .1, by=.1)	# which correlations should be induced in the population?
 
 
 ## ======================================================================
@@ -58,8 +58,8 @@ corEvol <- function(df, n.min=20, stepsize=1) {
   for (i in seq(n.min, nrow(df), by=stepsize)) {
     res[i-n.min+1, 1:2] <- c(n=i, R=cor(df[1:i,1], df[1:i,2]))
   }
-  colnames(res) <- c("n", "R") 	
-  return(res)	
+  colnames(res) <- c("n", "R")
+  return(res)
 }
 
 
@@ -69,53 +69,53 @@ corEvol <- function(df, n.min=20, stepsize=1) {
 #' @param rho Correlation to be imposed on the bivariate data set
 #' @param replace Sample with or without replacement?
 simCorEvol <- function(DIST, rho, n.min=20, n.max=1000, B=10, replace=TRUE, nCore=1, popsize=1000000) {
-  
+
   if (nCore > 1 & nCore > getDoParWorkers()) stop("nCore does not match the number of registered multicores!")
-  
+
   # Replications are split up in nCore pieces to harvest multicores
   if (B %% nCore != 0) {
     B <- ceiling(B/nCore)*nCore
     print(paste("Warning: Replications is not dividible by", nCore, "(the number of used processor cores) - set replications to", B))
   }
-  
+
   # Generate population with specified rho
   cat("\nImposing correlation on data ...\n")
 	set.seed(123)
   pop <- GenData(DIST, rho=rho, N=popsize)
-  
+
   cat("Running multicore simulations ...\n")
-  
+
   # outer loop for the distribution of replications across cores
   res1 <- foreach(batch=1:nCore, .combine=rbind) %dopar% {
-		
+
 		set.seed(123+batch)
-    
+
     maxcount <- (n.max-n.min+1)*(B/nCore)
     res <- matrix(NA, ncol=4, nrow=maxcount)
-    
+
     counter <- 1
-    
-    for (rep in 1:(B/nCore)) {		# rep = replication	
-      
+
+    for (rep in 1:(B/nCore)) {		# rep = replication
+
       # draw a boostrap sample from the population
-      sam <- pop[sample(1:nrow(pop), size=n.max, replace=replace), ]	
+      sam <- pop[sample(1:nrow(pop), size=n.max, replace=replace), ]
       f <- corEvol(sam)
       f <- cbind(f, rho = rho)
       f <- cbind(f, unique=(batch-1)*(B/nCore) + counter)
       res[(((counter-1)*nrow(f))+1):(counter*nrow(f)), 1:4] <- f
       counter <- counter + 1
-      
+
       # poor man's status bar ...
       if (counter %% 1000 == 0) print(paste0("Finished simulation ", counter, "..."))
     }
-    
+
     #res <- data.frame(res)
     colnames(res) <- c("n", "r", "rho", "unique")
     return(res)
   }
-  
+
   cat("Simulations done.\n")
-  
+
   return(res1)
 }
 
@@ -127,8 +127,10 @@ for (r in rs) {
   print(Sys.time())
   print(paste("Computing rho",r))
   print('####################################')
-  
+  tic <- Sys.time()
   sim <- simCorEvol(TESTDIST, n.max=n.max, B=B, rho=r, replace=TRUE, nCore=nCore)
+  toc <- Sys.time()
+  print(toc-tic)
   save(sim, file=paste0("simData/sim",r*10,".RData"), compress="gzip")
   rm(sim)
   gc(reset=TRUE)
