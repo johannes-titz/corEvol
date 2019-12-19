@@ -105,7 +105,7 @@ for (rho in seq(.1, .1, by=.1)) {
 }
 
 # reshape to the table format of the publication
-dcast(Q, rho ~ prob + w, value.var="qu")
+print(dcast(Q, rho ~ prob + w, value.var="qu"))
 
 
 
