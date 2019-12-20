@@ -28,7 +28,7 @@ source("00-Ruscio_GenData.R")
 popsize <- 1000000	# size of population from which samples are drawn
 n.max <- 1000		# maximum sample size
 n.min <- 20			# minimum sample size
-B <- 1000 		# number of bootstrapped trajectories
+B <- 10000 		# number of bootstrapped trajectories
 rs <- seq(.1, .1, by=.1)	# which correlations should be induced in the population?
 
 
