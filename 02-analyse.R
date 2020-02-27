@@ -64,7 +64,7 @@ getQuantiles <- function(POS, probs=c(.80, .90, .95)) {
 
 # this takes some time ...
 for (rho in seq(.1, .1, by=.1)) {
-	print(paste0("Analyzing rho = ", rho))
+	#print(paste0("Analyzing rho = ", rho))
 	load(file=paste0("simData/sim", rho*10, ".RData"))
 	sim <- data.frame(sim)
 
@@ -98,7 +98,7 @@ for (rho in seq(.1, .1, by=.1)) {
 }
 
 # reshape to the table format of the publication
-print(dcast(Q, rho ~ prob + w, value.var="qu"))
+#print(dcast(Q, rho ~ prob + w, value.var="qu"))
 
 
 
